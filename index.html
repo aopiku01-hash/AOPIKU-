@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>蒼とモデレーター専用アプリ</title>
+    
+    <!-- iPhoneでアプリ化して起動するための設定 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="蒼アプリ">
+
+    <!-- スマホ用のきれいなデザインシステム -->
+    <script src="https://jsdelivr.net"></script>
+    <style>
+        body { -webkit-touch-callout: none; -webkit-user-select: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 pb-20">
+
+    <!-- ヘッダー -->
+    <header class="bg-blue-600 text-white p-4 sticky top-0 shadow-md flex justify-between items-center z-50">
+        <h1 class="text-xl font-bold">蒼コミュニティ管理</h1>
+        <div id="user-profile" class="flex items-center space-x-2"></div>
+    </header>
+
+    <!-- メインコンテンツ領域 -->
+    <main class="p-4 max-w-md mx-auto">
+        <!-- 📋 企画管理タブ -->
+        <section id="tab-projects" class="tab-content">
+            <h2 class="text-lg font-bold mb-3 flex items-center">📋 企画一覧</h2>
+            <div id="project-list" class="space-y-4"></div>
+        </section>
+
+        <!-- 👥 メンバータブ -->
+        <section id="tab-members" class="tab-content hidden">
+            <h2 class="text-lg font-bold mb-3">👥 メンバー一覧</h2>
+            <div id="member-list" class="bg-white rounded-xl shadow p-4 divide-y divide-gray-100"></div>
+        </section>
+    </main>
+
+    <!-- 下部ナビゲーションバー（iPhoneアプリ風固定メニュー） -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around p-3 shadow-lg z-50">
+        <button onclick="switchTab('projects')" class="flex flex-col items-center text-blue-600 font-semibold" id="btn-projects">
+            <span class="text-xl">📋</span><span class="text-xs">企画管理</span>
+        </button>
+        <button onclick="switchTab('members')" class="flex flex-col items-center text-gray-400 font-semibold" id="btn-members">
+            <span class="text-xl">👥</span><span class="text-xs">メンバー</span>
+        </button>
+    </nav>
+
+    <script>
+        // 4人のメンバーデータ
+        const members = [
+            { name: "蒼", email: "aopiku.ao@gmail.com", role: "オーナー", img: "https://google.com" },
+            { name: "りゅーと", email: "aopiku01@gmail.com", role: "マネージャー", img: "https://google.com" },
+            { name: "あきほ", email: "aopiku.akiho@gmail.com", role: "モデレーター", img: "https://google.com" },
+            { name: "せい", email: "aopiku.sei@gmail.com", role: "モデレーター", img: "https://google.com" }
+        ];
+
+        // いただいた最初の企画データ
+        const projects = [
+            { id: 1, name: "キャラクター名前募集", desc: "ファンの参加を通じてキャラクターへの愛着と当事者意識を育み、蒼ブランドの一員として一緒に世界観をつくること。", date: "未定", author: "りゅーと", status: "予定中", condition: "アクティブ" }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // ヘッダーにログイン中の「蒼」さんのプロフィールを表示
+            document.getElementById('user-profile').innerHTML = `<span class="text-sm font-medium">${members[0].name}</span><img src="${members[0].img}" class="w-8 h-8 rounded-full border-2 border-white object-cover" onerror="this.src='https://placeholder.com'">`;
+            
+            // 企画表示の自動生成
+            const projectList = document.getElementById('project-list');
+            projects.forEach(p => {
+                projectList.innerHTML += `<div class="bg-white rounded-2xl shadow p-5 border border-gray-100"><div class="flex justify-between items-start mb-2"><span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-bold">${p.status}</span><span class="text-xs text-gray-500">発案: ${p.author}</span></div><h3 class="text-base font-bold mb-2 text-gray-900">${p.name}</h3><p class="text-sm text-gray-600 leading-relaxed mb-4 whitespace-pre-line">${p.desc}</p><div class="flex justify-between items-center text-xs text-gray-400 pt-3 border-t border-gray-50"><span>📅 開催日: ${p.date}</span><span class="text-green-600 font-semibold">● ${p.condition}</span></div></div>`;
+            });
+
+            // メンバー表示の自動生成
+            const memberList = document.getElementById('member-list');
+            members.forEach(m => {
+                memberList.innerHTML += `<div class="flex items-center space-x-4 py-3 first:pt-0 last:pb-0"><img src="${m.img}" class="w-12 h-12 rounded-full object-cover shadow-sm" onerror="this.src='https://placeholder.com'"><div class="flex-1"><div class="flex items-center space-x-2"><span class="font-bold text-gray-900">${m.name}</span><span class="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-medium">${m.role}</span></div><p class="text-xs text-gray-400">${m.email}</p></div></div>`;
+            });
+        });
+
+        // 下部メニューの切り替えシステム
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            document.querySelectorAll('nav button').forEach(el => { el.classList.remove('text-blue-600'); el.classList.add('text-gray-400'); });
+            const activeBtn = document.getElementById(`btn-${tabName}`);
+            activeBtn.classList.remove('text-gray-400'); activeBtn.classList.add('text-blue-600');
+        }
+    </script>
+</body>
+</html>
